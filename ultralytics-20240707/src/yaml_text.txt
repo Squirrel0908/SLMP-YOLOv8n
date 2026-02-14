@@ -1,0 +1,126 @@
+c2f-star + LADH + MLCA1
+# YOLOv8.0n backbone
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 2]]  # 0-P1/2
+  - [-1, 1, Conv, [128, 3, 2]]  # 1-P2/4
+  - [-1, 3, C2f_Star, [128, True]]
+  - [-1, 1, Conv, [256, 3, 2]]  # 3-P3/8
+  - [-1, 3, C2f_Star, [256, True]]
+  - [-1, 1, Conv, [512, 3, 2]]  # 5-P4/16
+  - [-1, 3, C2f_Star, [512, True]]
+  - [-1, 1, Conv, [1024, 3, 2]]  # 7-P5/32
+  - [-1, 3, C2f_Star, [1024, True]]
+  - [-1, 1, SPPF, [1024, 5]]  # 9
+  - [-1, 1, MLCA, []] # 10
+
+# YOLOv8.0n head
+head:
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]
+  - [[-1, 6], 1, Concat, [1]]  # cat backbone P4
+  - [-1, 3, C2f_Star, [512]]  # 12
+
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]
+  - [[-1, 4], 1, Concat, [1]]  # cat backbone P3
+  - [-1, 3, C2f_Star, [256]]  # 15 (P3/8-small)
+
+  - [-1, 1, Conv, [256, 3, 2]]
+  - [[-1, 13], 1, Concat, [1]]  # cat head P4
+  - [-1, 3, C2f_Star, [512]]  # 18 (P4/16-medium)
+
+  - [-1, 1, Conv, [512, 3, 2]] 
+  - [[-1, 10], 1, Concat, [1]]  # cat head P5
+  - [-1, 3, C2f_Star, [1024]]  # 21 (P5/32-large)
+
+  - [[16, 19, 22], 1, Detect_LADH, [nc]]  # Detect(P3, P4, P5)
+
+
+
+c2f-star + LADH + GAM_Attention1
+# YOLOv8.0n backbone
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 2]]  # 0-P1/2
+  - [-1, 1, Conv, [128, 3, 2]]  # 1-P2/4
+  - [-1, 3, C2f_Star, [128, True]]
+  - [-1, 1, Conv, [256, 3, 2]]  # 3-P3/8
+  - [-1, 3, C2f_Star, [256, True]]
+  - [-1, 1, Conv, [512, 3, 2]]  # 5-P4/16
+  - [-1, 3, C2f_Star, [512, True]]
+  - [-1, 1, Conv, [1024, 3, 2]]  # 7-P5/32
+  - [-1, 3, C2f_Star, [1024, True]]
+  - [-1, 1, SPPF, [1024, 5]]  # 9
+  - [-1, 1, GAM_Attention, []] # 10
+
+# YOLOv8.0n head
+head:
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]
+  - [[-1, 6], 1, Concat, [1]]  # cat backbone P4
+  - [-1, 3, C2f_Star, [512]]  # 12
+
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']]
+  - [[-1, 4], 1, Concat, [1]]  # cat backbone P3
+  - [-1, 3, C2f_Star, [256]]  # 15 (P3/8-small)
+
+  - [-1, 1, Conv, [256, 3, 2]]
+  - [[-1, 12], 1, Concat, [1]]  # cat head P4
+  - [-1, 3, C2f_Star, [512]]  # 18 (P4/16-medium)
+
+  - [-1, 1, Conv, [512, 3, 2]] 
+  - [[-1, 9], 1, Concat, [1]]  # cat head P5
+  - [-1, 3, C2f_Star, [1024]]  # 21 (P5/32-large)
+
+  - [[15, 18, 21], 1, Detect_LADH, [nc]]  # Detect(P3, P4, P5)
+
+
+    param_dict = {
+        # origin
+        'model': r'C:\Users\Sen\Desktop\ultralytics-20240707\runs\train\C2f_star_LADH_MLCA2\weights\best.pt',
+        'data':r'C:\Users\Sen\Desktop\ultralytics-20240707\ultralytics-main\dataset\data.yaml',
+        'imgsz': 640,
+        'epochs': 300,
+        'batch': 16,
+        'workers': 2,
+        'cache': False,
+        'optimizer': 'SGD',
+        'device': '0',
+        'close_mosaic': 0,
+        'project':'runs/prune',
+        'name':'yolov8-SLMP2-exp1',
+        
+        # prune
+        'prune_method':'lamp',
+        'global_pruning': False,
+        'speed_up': 2.0,
+        'reg': 0.0005,
+        'sl_epochs': 500,
+        'sl_hyp': r'C:\Users\Sen\Desktop\ultralytics-20240707\ultralytics-main\ultralytics\cfg\hyp.scratch.sl.yaml',
+        'sl_model': None,
+    }
+
+
+yolov8-SLMP2-slim_exp1
+param_dict = {
+        # origin
+        'model': r'C:\Users\Sen\Desktop\ultralytics-20240707\runs\train\C2f_star_LADH_MLCA2\weights\best.pt',
+        'data':r'C:\Users\Sen\Desktop\ultralytics-20240707\ultralytics-main\dataset\data.yaml',
+        'imgsz': 640,
+        'epochs': 300,
+        'batch': 8,
+        'workers': 2,
+        'cache': False,
+        'optimizer': 'SGD',
+        'device': '0',
+        'close_mosaic': 0,
+        'project':'runs/prune',
+        'name':'yolov8-SLMP2-slim_exp1',
+        
+        # prune
+        'prune_method':'slim',
+        'global_pruning': True,
+        'speed_up': 2.0,
+        'reg': 0.0005,
+        'sl_epochs': 500,
+        'sl_hyp': r'C:\Users\Sen\Desktop\ultralytics-20240707\ultralytics-main\ultralytics\cfg\hyp.scratch.sl.yaml',
+        'sl_model': None,
+    }

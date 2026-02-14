@@ -1,0 +1,50 @@
+# ============================
+# 1. 核心忽略规则 (Core Ignores)
+# ============================
+# 忽略 Python 编译文件
+__pycache__/
+*.pyc
+
+# 忽略系统文件
+.DS_Store
+.idea/
+.vscode/
+
+# ============================
+# 2. 数据集与权重 (Huge Files)
+# ============================
+# 忽略所有数据集文件夹
+ultralytics-20240707/src/dataset
+ultralytics-20240707/YS_dataset_prune_train
+ultralytics-20240707/YS_dataset_test
+# 忽略所有权重文件 (包括预训练权重和中间权重)
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# ============================
+# 3. 训练产出 (Training Outputs)
+# ============================
+# 忽略 runs 目录 (这是 YOLO 自动生成的训练日志，体积巨大)
+runs/
+# 如果你的稀疏训练日志在这个目录下，也忽略
+/hy-tmp/runs/
+
+# 忽略 wandb 日志
+wandb/
+
+# ============================
+# 4. Result 目录精细化管理
+# ============================
+# 默认忽略 Result 下的所有内容
+Result/diff_MLCA_CDDA/
+Result/diff-SLMP_SLCP/
+# --- 但是！保留以下核心资产 (白名单) ---
+
+!Result/*.csv
+!Result/*.xlsx
+!runs/train/ultralytics-20240707/
+# 如果你想保留最终那个 0.85M 的小模型权重 (因为它很小，可以传)
+# 取消下面这行的注释，并确保把 best.pt 放到根目录或指定位置
+# !best.pt
